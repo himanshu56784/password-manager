@@ -48,7 +48,6 @@ export class SideListComponent {
 
   loadSites(){
     this.allSites = this.pass_manag.loadSite()
-    console.log(this.allSites);
   }
 
   UpdateSite(sitename:string,siteUrl:string,siteImgUrl:string,siteId:string){
