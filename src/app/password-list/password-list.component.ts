@@ -22,7 +22,7 @@ export class PasswordListComponent {
 
   titleMsg : string = "Add new";
 
-  allPasswords !: Observable<Array<any>>;
+  allPasswords !: Array<any>;
 
   isMsgShow:boolean=false;
   msgContent !: string;
@@ -39,13 +39,11 @@ export class PasswordListComponent {
       this.site_Name = val.siteName;
       this.site_Url = val.siteUrl;
     })
-    this.allPasswords = this.pass_manag.loadPasswords(this.site_Id);
+    this.pass_manag.loadPasswords(this.site_Id).subscribe( val => this.allPasswords = val);
   }
   onSubmit(data:any){
-    
-
+    data.password = this.encryptPassword(data.password);
     if(this.titleMsg == "Add new"){
-
       this.pass_manag.addPassword(data,this.site_Id)
       .then( () =>{
         this.dataChangesMessage('password store successfully');
@@ -96,8 +94,20 @@ export class PasswordListComponent {
       })
   }
 
-  encryptPassword(){
-    
+  encryptPassword(password:string){
+    const secretyKey = '@NcRfUjXn2r5u8x!A%D*G-KaPdSgVkY';
+    return AES.encrypt(password,secretyKey).toString();
   }
+
+  decryptPassword(password:string,index:number){
+    const secretyKey = '@NcRfUjXn2r5u8x!A%D*G-KaPdSgVkY';
+    const decrypt =  AES.decrypt(password,secretyKey).toString(enc.Utf8);
+
+    this.allPasswords[index].password = decrypt;
+
+
+  }
+
+
 
 }
