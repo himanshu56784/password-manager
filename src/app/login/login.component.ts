@@ -15,7 +15,8 @@ export class LoginComponent {
   isError : boolean = false;
 
   onSubmit(value:any){
-    this.pass_mng.login(value.email,value.login)
+    alert(`${value.email}${value.password}`)
+    this.pass_mng.login(value.email,value.password)
     .then( () => {
       this.route.navigate(['site-list']);
     })

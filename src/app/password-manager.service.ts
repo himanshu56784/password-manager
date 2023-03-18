@@ -52,5 +52,4 @@ export class PasswordManagerService {
   return  signInWithEmailAndPassword(this.auth,email,pass);
   }
 
-
 }
