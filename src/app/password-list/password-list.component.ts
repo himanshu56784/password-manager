@@ -104,8 +104,6 @@ export class PasswordListComponent {
     const decrypt =  AES.decrypt(password,secretyKey).toString(enc.Utf8);
 
     this.allPasswords[index].password = decrypt;
-
-
   }
 
 
