@@ -1,14 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Observable } from 'rxjs';
-import { PasswordManagerService } from '../password-manager.service';
 import { AES,enc } from 'crypto-js';
+import { ApiService } from '../services/apiService.service';
 @Component({
   selector: 'app-password-list',
   templateUrl: './password-list.component.html',
   styleUrls: ['./password-list.component.css']
 })
-export class PasswordListComponent {
+export class PasswordListComponent implements OnInit{
 
   uname !: string;
   uemail !: string;
@@ -31,7 +31,8 @@ export class PasswordListComponent {
     this.msgContent = message;
   }
 
-  constructor(private route:ActivatedRoute,private pass_manag:PasswordManagerService){
+  constructor(private route:ActivatedRoute
+    ,private apiService:ApiService){
 
     this.route.queryParams.subscribe((val:any) => {
       this.site_Id = val.siteId;
@@ -39,28 +40,30 @@ export class PasswordListComponent {
       this.site_Name = val.siteName;
       this.site_Url = val.siteUrl;
     })
-    this.pass_manag.loadPasswords(this.site_Id).subscribe( val => this.allPasswords = val);
+    this.loadPasswords();
+  }
+
+  ngOnInit(): void {
+    this.loadPasswords();
+  }
+
+  loadPasswords(){
+    this.apiService.loadPasswords(this.site_Id).subscribe( val =>{
+      this.allPasswords = val;
+      console.log(val);
+    });
   }
   onSubmit(data:any){
     data.password = this.encryptPassword(data.password);
     if(this.titleMsg == "Add new"){
-      this.pass_manag.addPassword(data,this.site_Id)
-      .then( () =>{
-        this.dataChangesMessage('password store successfully');
-      })
-      .catch( (err) => {
-        console.log(err);
-      })  
+      this.apiService.addPassword(this.site_Id,data).subscribe();
+      this.resetForm();
+      this.ngOnInit();
     }
     else if(this.titleMsg == "Edit"){
-      this.pass_manag.updatePassword(this.site_Id,this.pass_Id,data)
-      .then( () => {
-        this.dataChangesMessage('password update successfully');
-        this.resetForm();
-      })
-      .catch( (err) => {
-        console.log(err);
-      })
+      this.apiService.updatePassword(this.pass_Id,data);
+      this.resetForm();
+      this.ngOnInit();
     }
   }
 
@@ -79,19 +82,15 @@ export class PasswordListComponent {
     this.uname   = username;
     this.upassword = password;
     this.pass_Id = passid;
-    
     this.titleMsg = "Edit";
   }
 
   deletePass(passid:string){
-
-    this.pass_manag.deletePasswordFromPasswords(this.site_Id,passid)
-      .then( () => {
-        this.dataChangesMessage('password delete successfully');
-      })
-      .catch( (err) => {
-        console.log(err);
-      })
+    this.apiService.deletePassword(passid).subscribe(
+      val => {
+        console.log(val);
+      }
+    )
   }
 
   encryptPassword(password:string){
@@ -105,7 +104,4 @@ export class PasswordListComponent {
 
     this.allPasswords[index].password = decrypt;
   }
-
-
-
 }

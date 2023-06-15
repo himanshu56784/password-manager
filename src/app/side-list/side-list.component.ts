@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { Observable } from 'rxjs';
-import { PasswordManagerService } from '../password-manager.service';
+import { Observable, config } from 'rxjs';
+import { ApiService } from '../services/apiService.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-side-list',
@@ -9,7 +10,8 @@ import { PasswordManagerService } from '../password-manager.service';
 })
 export class SideListComponent {
   
-  constructor(private pass_manag:PasswordManagerService){
+  constructor(private api:ApiService,
+    private router:Router){
     this.loadSites();
   }
   allSites !:Observable<Array<any>>;
@@ -27,27 +29,27 @@ export class SideListComponent {
   }
   onSubmit(values:any){
     if(this.formHeading == "Add New"){
-      this.pass_manag.addSite(values)
-      .then(()=>{
+      this.allSites = this.api.addSite(values,sessionStorage.getItem('ur-token'));
+      if(this.allSites){
         this.dataChangesMessage("Data Save Succesfully");
-      })
-      .catch( (err)=> {
-        console.log(err);
-      })
+        this.loadSites();
+      }else{
+        console.log("error come in add sites");
+      }
+      
     }
     else if(this.formHeading == "Edit"){
-      this.pass_manag.updateSite(this.site_Id,values)
-      .then(()=>{
-        this.dataChangesMessage("Data Update Succesfully");
-      })
-      .catch( (err)=> {
-        console.log(err);
-      })
+      this.api.updateSite(this.site_Id,values).subscribe(
+        val => console.log(val)
+      );
+      this.router.navigateByUrl('/').then(val => {
+        this.router.navigateByUrl(this.router.url);
+      });
     }
   }
 
   loadSites(){
-    this.allSites = this.pass_manag.loadSite()
+    this.allSites = this.api.loadSite(sessionStorage.getItem('ur-token'));
   }
 
   UpdateSite(sitename:string,siteUrl:string,siteImgUrl:string,siteId:string){
@@ -59,13 +61,8 @@ export class SideListComponent {
   }
 
   deleteSite(siteId:string){
-    this.pass_manag.deleteDatafromSite(siteId)
-    .then(()=>{
-      this.dataChangesMessage("Data Deleted Succesfully");
-    })
-    .catch( (err)=> {
-      console.log(err);
-    })
+    this.api.deleteSite(siteId);
+    this.loadSites();
   }
 
 }

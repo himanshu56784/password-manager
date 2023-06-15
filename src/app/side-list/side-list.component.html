@@ -38,21 +38,21 @@
 
     <div class="grid grid-cols-4 gap-5">
         <div *ngFor="let si of allSites | async" class="shadow-lg border-2 border-gray-900">
-            <img [src]="si.siteImgUrl" alt="">
+            <img [src]="si.imageUrl" alt="">
             <h3 class="p-3 text-xl font-bold">{{si.siteName}}</h3>
             <div class="w-60 m-3 px-3 bg-blue-200 text-blue-800 rounded-lg text-sm">
                 {{si.siteUrl}}
             </div>
             <button 
             routerLink="/password-list"
-            [queryParams]="{siteId:si.id , siteName:si.siteName , siteUrl:si.siteURL ,siteImgUrl:si.siteImgUrl}"
+            [queryParams]="{siteId:si.siteId , siteName:si.siteName , siteUrl:si.siteUrL ,siteImgUrl:si.imageUrl}"
             class="my-3 ml-3 mx-0.5 px-5 py-3 text-sm bg-gray-900 text-white shadow rounded-lg">
             Add New Password
             </button>
-            <button (click)="UpdateSite(si.siteName,si.siteUrl,si.siteImgUrl,si.id)" class="my-3 mx-0.5 px-5 py-3 text-sm border-2 border-gray-900 text-gray-900 shadow rounded-lg">
+            <button (click)="UpdateSite(si.siteName,si.siteUrl,si.imageUrl,si.siteId)" class="my-3 mx-0.5 px-5 py-3 text-sm border-2 border-gray-900 text-gray-900 shadow rounded-lg">
                 Edit
             </button>
-            <button (click)="deleteSite(si.id)" class="my-3 mx-0.5 px-5 py-3 text-sm border-2 border-gray-900 text-gray-900 shadow rounded-lg">
+            <button (click)="deleteSite(si.siteId)" class="my-3 mx-0.5 px-5 py-3 text-sm border-2 border-gray-900 text-gray-900 shadow rounded-lg">
                 Delete
             </button>
 

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { PasswordManagerService } from '../password-manager.service';
+import { ApiService } from '../services/apiService.service';
 
 @Component({
   selector: 'app-login',
@@ -8,22 +8,33 @@ import { PasswordManagerService } from '../password-manager.service';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
-  constructor(private pass_mng:PasswordManagerService,private route:Router){
-
+  constructor(private apiService:ApiService,private route:Router){
+    if(sessionStorage.getItem('ur-token')){
+      this.route.navigate(['/site-list']);
+    }
   }
+
+  valid:any;
 
   isError : boolean = false;
 
   onSubmit(value:any){
-    alert(`${value.email}${value.password}`)
-    this.pass_mng.login(value.email,value.password)
-    .then( () => {
-      this.route.navigate(['site-list']);
-    })
-    .catch( err => {
-      console.log(err);
-      this.isError = true; 
-    })
+    this.apiService.loginUser(value.email,value.password)
+    .subscribe(
+      (response) => {
+        if(response){
+          this.valid = response.object
+          sessionStorage.setItem('ur-token',this.valid.registrationId);
+          this.route.navigate(['/site-list']);
+        }else{
+          alert("wrong user email and password");
+        }
+      }
+    );
+
+    
+
+    
 
   }
 

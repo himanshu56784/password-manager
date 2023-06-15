@@ -13,6 +13,10 @@ import { LoginComponent } from './login/login.component';
 import { PasswordListComponent } from './password-list/password-list.component';
 
 import { FormsModule } from '@angular/forms';
+import { RegistrationComponent } from './registration/registration.component';
+import { ApiService } from './services/apiService.service';
+import { HttpService } from './services/httpService.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -20,7 +24,8 @@ import { FormsModule } from '@angular/forms';
     NavbarComponent,
     SideListComponent,
     LoginComponent,
-    PasswordListComponent
+    PasswordListComponent,
+    RegistrationComponent
   ],
   imports: [
     BrowserModule,
@@ -28,9 +33,10 @@ import { FormsModule } from '@angular/forms';
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
-  providers: [],
+  providers: [ApiService,HttpService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
